@@ -23,7 +23,7 @@
 // 		      <p class="country__row"><span>👫</span>${(
 // 						+data.population / 1000000
 // 					).toFixed(1)} millions</p>
-                    
+
 // 		      <p class="country__row"><span>🗣️</span>${
 // 						Object.values(data.languages)[0]
 // 					}</p>
@@ -94,10 +94,10 @@
 const btn = document.querySelector(".btn-country");
 const countriesContainer = document.querySelector(".countries");
 function renderError(msg) {
-	countriesContainer.insertAdjacentText("beforeend", msg);
+  countriesContainer.insertAdjacentText("beforeend", msg);
 }
 function renderCountry(data, className = "") {
-	const html = `
+  const html = `
 	<article class="country ${className}">
 		<img class="country__img" src="${data.flags.png}" />
 		<div class="country__data">
@@ -105,47 +105,44 @@ function renderCountry(data, className = "") {
 		  <h4 class="country__region">${data.region}</h4>
 		  <p class="country__row"><span>🏙️</span>${data.capital}</p>
 		  <p class="country__row"><span>👫</span>${(+data.population / 1000000).toFixed(
-				1
-			)} millions</p>
+        1
+      )} millions</p>
 
 		  <p class="country__row"><span>🗣️</span>${Object.values(data.languages)[0]}</p>
 		  <p class="country__row"><span>💰</span>${
-				Object.values(data.currencies)[0].name
-			}</p>
+        Object.values(data.currencies)[0].name
+      }</p>
 		</div>
 	</article>
 	`;
-	countriesContainer.insertAdjacentHTML("beforeend", html);
+  countriesContainer.insertAdjacentHTML("beforeend", html);
 }
 //Avoiding duplicates in code:
 function getJSON(url, errMsg = "Something went wrong!!") {
-	return fetch(url).then((response) => {
-		console.log(response);
-		if (!response.ok) throw new Error(`${errMsg} Code: ${response.status}. `);
-		return response.json();
-	});
+  return fetch(url).then((response) => {
+    console.log(response);
+    if (!response.ok) throw new Error(`${errMsg} Code: ${response.status}. `);
+    return response.json();
+  });
 }
 function getCountryData(country) {
-	getJSON(
-		`https://restcountries.com/v3.1/name/${country}`,
-		"Country not found!!"
-	)
-		.then(function (data) {
-			renderCountry(data[0]);
-			// for neighbors
-			const neighbors = data[0].borders[0];
-			// const neighbors = "hjkloi";
+  getJSON(
+    `https://restcountries.com/v3.1/name/${country}`,
+    "Country not found!!"
+  )
+    .then(function (data) {
+      renderCountry(data[0]);
+      // for neighbors
+      const neighbors = data[0].borders[0];
+      // const neighbors = "hjkloi";
 
-			return getJSON(
-				`https://restcountries.com/v3.1/alpha/${neighbors}`,
-				"Country not found!!"
-			);
-		})
-		.then((data) => renderCountry(data[0], "neighbor"))
-		.catch((err) =>
-			renderError(`Something went wrong! ${err.message} Try again!! `)
-		)
-		.finally(() => (countriesContainer.style.opacity = 1)); // this line will executes regardless of promise result
+      return getJSON(
+        `https://restcountries.com/v3.1/alpha/${neighbors}`,
+        "Country not found!!"
+      );
+    })
+    .then((data) => renderCountry(data[0], "neighbor"))
+    .catch((err) => renderError(`Something went wrong! No neighbor exists!! `))
+    .finally(() => (countriesContainer.style.opacity = 1)); // this line will executes regardless of promise result
 }
-getCountryData("hjhy");
-
+getCountryData("japan");
