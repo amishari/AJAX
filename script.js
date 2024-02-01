@@ -44,8 +44,58 @@
 // getCountry("japan");
 
 //Modern Way ES-6 Promise
+// const btn = document.querySelector(".btn-country");
+// const countriesContainer = document.querySelector(".countries");
+// function renderCountry(data, className = "") {
+// 	const html = `
+// 	<article class="country ${className}">
+// 		<img class="country__img" src="${data.flags.png}" />
+// 		<div class="country__data">
+// 		  <h3 class="country__name">${data.name.common}</h3>
+// 		  <h4 class="country__region">${data.region}</h4>
+// 		  <p class="country__row"><span>🏙️</span>${data.capital}</p>
+// 		  <p class="country__row"><span>👫</span>${(+data.population / 1000000).toFixed(
+// 				1
+// 			)} millions</p>
+
+// 		  <p class="country__row"><span>🗣️</span>${Object.values(data.languages)[0]}</p>
+// 		  <p class="country__row"><span>💰</span>${
+// 				Object.values(data.currencies)[0].name
+// 			}</p>
+// 		</div>
+// 	</article>
+// 	`;
+// 	countriesContainer.insertAdjacentHTML("beforeend", html);
+// 	countriesContainer.style.opacity = 1;
+// }
+
+// function getCountryData(country) {
+// 	fetch(`https://restcountries.com/v3.1/name/${country}`)
+// 		.then(function (response) {
+// 			console.log(response);
+// 			return response.json();
+// 		})
+// 		.then(function (data) {
+// 			renderCountry(data[0]);
+// 			// for neighbors
+// 			const neighbors = data[0].borders[0];
+// 			if (!neighbors) return;
+// 			console.log(neighbors);
+// 			return fetch(`https://restcountries.com/v3.1/alpha/${neighbors}`);
+// 		})
+// 		.then((response) => response.json())
+// 		.then(function (data) {
+// 			renderCountry(data[0], "neighbor");
+// 		});
+// }
+// getCountryData("austria");
+
+// ES-6 Catching error centrally with refraction
 const btn = document.querySelector(".btn-country");
 const countriesContainer = document.querySelector(".countries");
+function renderError(msg) {
+	countriesContainer.insertAdjacentText("beforeend", msg);
+}
 function renderCountry(data, className = "") {
 	const html = `
 	<article class="country ${className}">
@@ -66,26 +116,36 @@ function renderCountry(data, className = "") {
 	</article>
 	`;
 	countriesContainer.insertAdjacentHTML("beforeend", html);
-	countriesContainer.style.opacity = 1;
 }
-
+//Avoiding duplicates in code:
+function getJSON(url, errMsg = "Something went wrong!!") {
+	return fetch(url).then((response) => {
+		console.log(response);
+		if (!response.ok) throw new Error(`${errMsg} Code: ${response.status}. `);
+		return response.json();
+	});
+}
 function getCountryData(country) {
-	fetch(`https://restcountries.com/v3.1/name/${country}`)
-		.then(function (response) {
-			console.log(response);
-			return response.json();
-		})
+	getJSON(
+		`https://restcountries.com/v3.1/name/${country}`,
+		"Country not found!!"
+	)
 		.then(function (data) {
 			renderCountry(data[0]);
 			// for neighbors
 			const neighbors = data[0].borders[0];
-			if (!neighbors) return;
-			console.log(neighbors);
-			return fetch(`https://restcountries.com/v3.1/alpha/${neighbors}`);
+			// const neighbors = "hjkloi";
+
+			return getJSON(
+				`https://restcountries.com/v3.1/alpha/${neighbors}`,
+				"Country not found!!"
+			);
 		})
-		.then((response) => response.json())
-		.then(function (data) {
-			renderCountry(data[0], "neighbor");
-		});
+		.then((data) => renderCountry(data[0], "neighbor"))
+		.catch((err) =>
+			renderError(`Something went wrong! ${err.message} Try again!! `)
+		)
+		.finally(() => (countriesContainer.style.opacity = 1)); // this line will executes regardless of promise result
 }
-getCountryData("austria");
+getCountryData("hjhy");
+
