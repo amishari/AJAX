@@ -120,7 +120,6 @@ function renderCountry(data, className = "") {
 //Avoiding duplicates in code:
 function getJSON(url, errMsg = "Something went wrong!!") {
   return fetch(url).then((response) => {
-    console.log(response);
     if (!response.ok) throw new Error(`${errMsg} Code: ${response.status}. `);
     return response.json();
   });
@@ -134,8 +133,6 @@ function getCountryData(country) {
       renderCountry(data[0]);
       // for neighbors
       const neighbors = data[0].borders[0];
-      // const neighbors = "hjkloi";
-
       return getJSON(
         `https://restcountries.com/v3.1/alpha/${neighbors}`,
         "Country not found!!"
@@ -145,4 +142,4 @@ function getCountryData(country) {
     .catch((err) => renderError(`Something went wrong! No neighbor exists!! `))
     .finally(() => (countriesContainer.style.opacity = 1)); // this line will executes regardless of promise result
 }
-getCountryData("japan");
+getCountryData("romania");
