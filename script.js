@@ -143,7 +143,21 @@ function getCountryData(country) {
     .catch((err) => renderError(`Something went wrong! No neighbor exists!! `))
     .finally(() => (countriesContainer.style.opacity = 1)); // this line will executes regardless of promise result
 }
-btn.addEventListener("click", () => getCountryData("poland"));
+// btn.addEventListener("click", () => getCountryData("poland"));
+
+getPosition()
+	.then((pos) => {
+		const { latitude: lat, longitude: log } = pos.coords;
+		console.log(lat, log);
+
+		return fetch(
+			`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${log}&localityLanguage=en`
+		);
+	})
+	.then((res) => res.json())
+	.then((data) => data.countryName));
+btn.addEventListener("click", () => getCountryData(getPsition());
+
 
 // a proof for priority of executing microtasks queue over callback queue
 // console.log("Test");0
@@ -154,3 +168,59 @@ btn.addEventListener("click", () => getCountryData("poland"));
 //   return console.log(res);
 // });
 // console.log("Test Ends!");
+
+//Promisifying a callback function
+// const lotteryPromise = new Promise(function (resolve, reject) {
+// 	console.log("Lottery drawing is underway!! Please wait!!");
+// 	setTimeout(function () {
+// 		if (Math.random() >= 0.5) {
+// 			resolve("You Win! ");
+// 		} else {
+// 			reject("You lost your money!!");
+// 		}
+// 	}, 2000);
+// });
+// lotteryPromise
+// 	.then((res) => console.log(res))
+// 	.catch((err) => console.error(err));
+
+//Promisifying a callback function setTimeout
+
+// const wait = function (second) {
+// 	return new Promise(function (resolve) {
+// 		setTimeout(resolve, second * 1000);
+// 	});
+// };
+// wait(3)
+// 	.then(() => {
+// 		console.log("Waiting for 3sec.");
+// 		return wait(2);
+// 	})
+// 	.then(() => {
+// 		console.log("Waiting for 2sec.");
+// 		return wait(1);
+// 	})
+// 	.then(() => {
+// 		console.log("Waiting for 1sec.");
+// 	});
+
+// Static method
+// Promise.resolve("abc").then(() => console.log("abc"));
+
+// another example of async. with promise
+// const getPosition = function () {
+// 	return new Promise(function (resolve, reject) {
+// 		navigator.geolocation.getCurrentPosition(resolve, reject);
+// 	});
+// };
+// getPosition()
+// 	.then((pos) => {
+// 		const { latitude: lat, longitude: log } = pos.coords;
+// 		console.log(lat, log);
+
+// 		return fetch(
+// 			`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${log}&localityLanguage=en`
+// 		);
+// 	})
+// 	.then((res) => res.json())
+// 	.then((data) => console.log(`You are in ${data.city}, ${data.countryName} `));
